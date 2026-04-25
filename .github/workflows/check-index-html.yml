@@ -1,0 +1,32 @@
+name: Check index.html
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Check if index.html exists
+        id: check
+        run: bash check_index.sh
+
+      - name: Commit result to README.md in main
+        if: steps.check.outcome == 'success'
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          echo "- Branch: **${BRANCH}** — index.html exists ✅" >> README.md
+          git add README.md
+          git commit -m "chore: add check result for branch ${BRANCH}"
+          git push origin main
