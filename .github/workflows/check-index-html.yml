@@ -3,6 +3,9 @@ name: Check index.html
 on:
   workflow_dispatch:
 
+  permissions:
+  contents: write
+
 jobs:
   check-index:
     runs-on: ubuntu-latest
